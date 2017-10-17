@@ -1,0 +1,5 @@
+# Python Binaries
+*.pyc
+
+# Virtual Environment
+env/
