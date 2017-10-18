@@ -22,6 +22,8 @@ python route_estimate.py -o "8535 Hargis Street, Los Angeles, CA" -d "1720 Pacif
 ```
 For usage instructions run `python route_estimate.py --help`.
 
+The CLI sets the departure time to the closest in the future. For example if it's currently 10/18/17 9:00 am, and you choose 10:00 as the time, it will set the date to 10/18/17 10:00 am. If you choose 8:00, it will set the date to 10/19/17 8:00. 
+
 ### Further Improvements
 The Google Distance Matrix API has a lot of extremely powerful features. Here are a few features I would add in this scenario:
 
