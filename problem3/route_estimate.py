@@ -1,5 +1,6 @@
 import click
 from datetime import datetime
+from datetime import timedelta
 import logging
 
 from google_adapter import GoogleAdapter
@@ -26,7 +27,8 @@ def set_up():
               )
 @click.option('--time', '-t',
               help="Departure time formatted as HH:MM in 24 hour format "
-                   "i.e. 16:20. If not specified, defaults to now."
+                   "i.e. 16:20. Date defaults to closest in the future. "
+                   "If time not specified, defaults to now."
               )
 def main(origin, destination, time):
 
@@ -36,21 +38,27 @@ def main(origin, destination, time):
 
     if time:
         try:
+            now = datetime.now()
             time = datetime.strptime(time, TIME_FORMAT)
+            time = time.replace(
+                year=now.year, month=now.month, day=now.day
+            )
+            if time.time() < now.time():
+                time = time + timedelta(days=1)
+
         except ValueError:
             raise click.BadParameter(
                 "Time must be in {} format".format(TIME_FORMAT)
             )
 
-    logger.info("Calculating time and distance from "
-                "{} to {}.".format(origin, destination))
-
-    (dist, time) = google_adapter.route_estimate(
-        list(origin), list(destination)
+    result = google_adapter.route_estimate(
+        list(origin), list(destination), departure_time=time
     )
 
     logger.info(
-        "This route will take {} miles and {} minutes".format(dist, time)
+        "This route will take {} miles and {} minutes".format(
+            result['distance'], result['time']
+        )
     )
 
 
