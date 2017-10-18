@@ -17,10 +17,12 @@ def set_up():
 
 @click.command()
 @click.option('--origin', '-o', multiple=True,
-              help="Origin Address"
+              help="Origin Address formatted as a string"
+                   "Ex: '8535 Hargis Street, Los Angeles, CA'"
               )
 @click.option('--destination', '-d', multiple=True,
-              help="Destination Address"
+              help="Destination Address formatted as string"
+                   "Ex: '8535 Hargis Street, Los Angeles, CA'"
               )
 @click.option('--time', '-t',
               help="Departure time formatted as HH:MM in 24 hour format "
