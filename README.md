@@ -1,8 +1,11 @@
 # Aatish Open Listings Interview
 
-To run any of the solution code, activate the python virtual environment:
+To run any of the solution code, first activate the python virtual environment:
 ```
+pip install virtualenv
+virtualenv -p python3 env
 source env/bin/activate
+pip install -r requirements.txt
 ```
 
 ## Problem 1
