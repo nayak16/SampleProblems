@@ -25,7 +25,7 @@ class GoogleAdapter():
         return round(meters / self.METERS_IN_MILES, 1)
 
     def _seconds_to_minutes(self, seconds):
-        return seconds / self.SEC_IN_MIN
+        return round(seconds / self.SEC_IN_MIN, 1)
 
     def route_estimate(self, origin, destination, departure_time=None):
         """
