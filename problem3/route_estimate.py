@@ -38,6 +38,7 @@ def main(origin, destination, time):
 
     if time:
         try:
+            # Set time to closest in the future
             now = datetime.now()
             time = datetime.strptime(time, TIME_FORMAT)
             time = time.replace(
@@ -51,6 +52,7 @@ def main(origin, destination, time):
                 "Time must be in {} format".format(TIME_FORMAT)
             )
 
+    # Call Google Adapter
     result = google_adapter.route_estimate(
         list(origin), list(destination), departure_time=time
     )

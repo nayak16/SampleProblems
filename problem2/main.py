@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 TARGET_LINK = 'shittylistings.com'
+ROOT_DIR = './website'
 
 
 def construct_file_path(file, cwd):
@@ -15,11 +16,8 @@ def construct_file_path(file, cwd):
 
 
 def search_directory(root_dir, html_scraper):
-    logger.info(
-        "Searching the {} directory for files with link to {}..."
-        .format(root_dir, TARGET_LINK)
-    )
     bad_files = []
+    # Walk the route directory and all it's sub dirs
     for path, subdirs, cwd_files in os.walk(root_dir):
         for file in cwd_files:
             full_path = construct_file_path(file, path)
@@ -37,8 +35,13 @@ def main():
     os.chdir(dname)
 
     scraper = HTMLScraper(TARGET_LINK)
-    bad_files = search_directory('./website', scraper)
+    logger.info(
+        "Searching the '{}' directory for files with link to '{}'..."
+        .format(ROOT_DIR, TARGET_LINK)
+    )
+    bad_files = search_directory(ROOT_DIR, scraper)
 
+    # Report results
     logger.info('The following files link to {}:'.format(TARGET_LINK))
     for file in bad_files:
         logger.info(file)

@@ -48,7 +48,6 @@ class GoogleAdapter():
                     "{} to {} with departure time {}.".format(
                         origin, destination, departure_time)
                     )
-        print(departure_time)
         try:
             resp = self.client.distance_matrix(
                 origins=origin,

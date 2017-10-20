@@ -15,6 +15,7 @@ class CustomHTMLParser(HTMLParser):
         self.links = []
 
     def handle_starttag(self, tag, attrs):
+        # Save all hrefs
         if tag == self.LINK_TAG:
             for attr in attrs:
                 if attr[0] == self.HREF_ATTR:
