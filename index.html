@@ -166,6 +166,10 @@
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
+            // Resume context if suspended (required for iOS)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
             return audioContext;
         }
 
