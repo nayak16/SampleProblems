@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Sounds for Kids!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #fff3cd;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .animals-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .animal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid transparent;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .animal-card:active {
+            transform: scale(0.95);
+        }
+
+        .animal-card.playing {
+            animation: bounce 0.5s ease infinite;
+            border-color: #ffd700;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .animal-emoji {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+
+        .animal-name {
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .sound-text {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* Individual animal card colors */
+        .cow { background: linear-gradient(145deg, #fff5f5, #ffe0e0); }
+        .dog { background: linear-gradient(145deg, #fff8e1, #ffecb3); }
+        .cat { background: linear-gradient(145deg, #e8f5e9, #c8e6c9); }
+        .duck { background: linear-gradient(145deg, #e3f2fd, #bbdefb); }
+        .pig { background: linear-gradient(145deg, #fce4ec, #f8bbd9); }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 500px) {
+            h1 { font-size: 1.8rem; }
+            .animal-emoji { font-size: 4rem; }
+            .animals-container { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Animal Sounds! 🎵</h1>
+    <p class="subtitle">Click on an animal to hear its sound!</p>
+
+    <div class="animals-container">
+        <div class="animal-card cow" onclick="playSound('cow', this)">
+            <span class="animal-emoji">🐄</span>
+            <span class="animal-name">Cow</span>
+            <span class="sound-text">"Moo!"</span>
+        </div>
+
+        <div class="animal-card dog" onclick="playSound('dog', this)">
+            <span class="animal-emoji">🐕</span>
+            <span class="animal-name">Dog</span>
+            <span class="sound-text">"Woof!"</span>
+        </div>
+
+        <div class="animal-card cat" onclick="playSound('cat', this)">
+            <span class="animal-emoji">🐱</span>
+            <span class="animal-name">Cat</span>
+            <span class="sound-text">"Meow!"</span>
+        </div>
+
+        <div class="animal-card duck" onclick="playSound('duck', this)">
+            <span class="animal-emoji">🦆</span>
+            <span class="animal-name">Duck</span>
+            <span class="sound-text">"Quack!"</span>
+        </div>
+
+        <div class="animal-card pig" onclick="playSound('pig', this)">
+            <span class="animal-emoji">🐷</span>
+            <span class="animal-name">Pig</span>
+            <span class="sound-text">"Oink!"</span>
+        </div>
+    </div>
+
+    <footer>
+        Made with ❤️ for kids!
+    </footer>
+
+    <script>
+        // Web Audio API context
+        let audioContext = null;
+
+        function getAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        // Sound synthesis functions for each animal
+        const animalSounds = {
+            cow: () => {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.frequency.setValueAtTime(150, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
+                osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.6);
+                osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 1.0);
+
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 1.2);
+
+                return 1200;
+            },
+
+            dog: () => {
+                const ctx = getAudioContext();
+
+                // Two barks
+                for (let i = 0; i < 2; i++) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    const startTime = ctx.currentTime + i * 0.3;
+
+                    osc.frequency.setValueAtTime(400, startTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, startTime + 0.1);
+                    osc.frequency.exponentialRampToValueAtTime(200, startTime + 0.15);
+
+                    gain.gain.setValueAtTime(0.5, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.2);
+                }
+
+                return 600;
+            },
+
+            cat: () => {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.frequency.setValueAtTime(500, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(700, ctx.currentTime + 0.2);
+                osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.5);
+                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.8);
+
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.9);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.9);
+
+                return 900;
+            },
+
+            duck: () => {
+                const ctx = getAudioContext();
+
+                // Three quacks
+                for (let i = 0; i < 3; i++) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    const startTime = ctx.currentTime + i * 0.25;
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(600, startTime);
+                    osc.frequency.exponentialRampToValueAtTime(400, startTime + 0.1);
+
+                    gain.gain.setValueAtTime(0.2, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.15);
+                }
+
+                return 700;
+            },
+
+            pig: () => {
+                const ctx = getAudioContext();
+
+                // Oink oink
+                for (let i = 0; i < 2; i++) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    const startTime = ctx.currentTime + i * 0.35;
+
+                    osc.frequency.setValueAtTime(200, startTime);
+                    osc.frequency.exponentialRampToValueAtTime(350, startTime + 0.1);
+                    osc.frequency.exponentialRampToValueAtTime(150, startTime + 0.25);
+
+                    gain.gain.setValueAtTime(0.4, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.3);
+                }
+
+                return 700;
+            }
+        };
+
+        function playSound(animal, element) {
+            // Add playing animation
+            element.classList.add('playing');
+
+            // Play the sound
+            const duration = animalSounds[animal]();
+
+            // Remove animation after sound finishes
+            setTimeout(() => {
+                element.classList.remove('playing');
+            }, duration);
+        }
+    </script>
+</body>
+</html>
