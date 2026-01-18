@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - claude/kids-animal-sounds-app-D02yD
-    paths:
-      - 'kids-animal-sounds/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
