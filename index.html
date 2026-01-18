@@ -159,159 +159,50 @@
     </footer>
 
     <script>
-        // Web Audio API context
-        let audioContext = null;
-
-        function getAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            // Resume context if suspended (required for iOS)
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-            return audioContext;
-        }
-
-        // Sound synthesis functions for each animal
+        // Real animal sound URLs (public domain / free sounds)
         const animalSounds = {
-            cow: () => {
-                const ctx = getAudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc.frequency.setValueAtTime(150, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
-                osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.6);
-                osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 1.0);
-
-                gain.gain.setValueAtTime(0.5, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
-
-                osc.start(ctx.currentTime);
-                osc.stop(ctx.currentTime + 1.2);
-
-                return 1200;
+            cow: {
+                url: 'https://cdn.freesound.org/previews/58/58277_634166-lq.mp3',
+                duration: 2000
             },
-
-            dog: () => {
-                const ctx = getAudioContext();
-
-                // Two barks
-                for (let i = 0; i < 2; i++) {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    const startTime = ctx.currentTime + i * 0.3;
-
-                    osc.frequency.setValueAtTime(400, startTime);
-                    osc.frequency.exponentialRampToValueAtTime(300, startTime + 0.1);
-                    osc.frequency.exponentialRampToValueAtTime(200, startTime + 0.15);
-
-                    gain.gain.setValueAtTime(0.5, startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
-
-                    osc.start(startTime);
-                    osc.stop(startTime + 0.2);
-                }
-
-                return 600;
+            dog: {
+                url: 'https://cdn.freesound.org/previews/328/328730_230356-lq.mp3',
+                duration: 1500
             },
-
-            cat: () => {
-                const ctx = getAudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc.frequency.setValueAtTime(500, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(700, ctx.currentTime + 0.2);
-                osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.5);
-                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.8);
-
-                gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.9);
-
-                osc.start(ctx.currentTime);
-                osc.stop(ctx.currentTime + 0.9);
-
-                return 900;
+            cat: {
+                url: 'https://cdn.freesound.org/previews/415/415209_5121236-lq.mp3',
+                duration: 1500
             },
-
-            duck: () => {
-                const ctx = getAudioContext();
-
-                // Three quacks
-                for (let i = 0; i < 3; i++) {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    const startTime = ctx.currentTime + i * 0.25;
-
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(600, startTime);
-                    osc.frequency.exponentialRampToValueAtTime(400, startTime + 0.1);
-
-                    gain.gain.setValueAtTime(0.2, startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
-
-                    osc.start(startTime);
-                    osc.stop(startTime + 0.15);
-                }
-
-                return 700;
+            duck: {
+                url: 'https://cdn.freesound.org/previews/111/111950_1987978-lq.mp3',
+                duration: 1000
             },
-
-            pig: () => {
-                const ctx = getAudioContext();
-
-                // Oink oink
-                for (let i = 0; i < 2; i++) {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    const startTime = ctx.currentTime + i * 0.35;
-
-                    osc.frequency.setValueAtTime(200, startTime);
-                    osc.frequency.exponentialRampToValueAtTime(350, startTime + 0.1);
-                    osc.frequency.exponentialRampToValueAtTime(150, startTime + 0.25);
-
-                    gain.gain.setValueAtTime(0.4, startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-
-                    osc.start(startTime);
-                    osc.stop(startTime + 0.3);
-                }
-
-                return 700;
+            pig: {
+                url: 'https://cdn.freesound.org/previews/86/86669_1022651-lq.mp3',
+                duration: 1500
             }
         };
+
+        // Preload audio elements
+        const audioElements = {};
+        for (const [animal, data] of Object.entries(animalSounds)) {
+            audioElements[animal] = new Audio(data.url);
+            audioElements[animal].preload = 'auto';
+        }
 
         function playSound(animal, element) {
             // Add playing animation
             element.classList.add('playing');
 
-            // Play the sound
-            const duration = animalSounds[animal]();
+            // Get the audio element and play it
+            const audio = audioElements[animal];
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Audio play failed:', e));
 
             // Remove animation after sound finishes
             setTimeout(() => {
                 element.classList.remove('playing');
-            }, duration);
+            }, animalSounds[animal].duration);
         }
     </script>
 </body>
